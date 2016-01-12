@@ -31,6 +31,29 @@
 					this.x = this.x + this.vx*dt;
 					this.y = this.y + this.vy*dt;
 				};
+				this.moverCartGrid = function(dt, g, grid){
+					this.ax -= this.atx*(this.vx);
+					this.ay -= this.aty*(this.vy);
+
+					this.vx = this.vx + this.ax*dt;					
+					this.vy = this.vy + this.ay*dt + g*dt;
+
+					this.gx = Math.floor(this.x/30);
+					this.gy = Math.floor(this.y/30);
+
+					this.x = this.x + this.vx*dt;
+					if(grid[this.gy+1][this.gx]==1){
+						var dy = Math.min(
+							this.vy*dt,
+							(this.gy+1)*30-(this.y+this.h/2)
+						);
+						if(dy ==0) this.vy = 0;
+						this.y += dy;
+
+					} else {
+						this.y = this.y + this.vy*dt;
+					}
+				};
 				this.desenhar = function(ctx){
 					ctx.save();
 
@@ -47,6 +70,8 @@
 					ctx.fill();
 					ctx.stroke();
 					ctx.restore();
+					ctx.strokeStyle = "white";
+					ctx.strokeRect(this.gx*30,this.gy*30, 30, 30);
 				};
 				this.controlar = function(){
 
