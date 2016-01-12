@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Plataforma</title>
+		<script src="Sprite.js"></script>
+	</head>
+	<body>
+		<h1>Plataforma</h1>
+		<canvas width="400" height="300">
+			Seu navegador nao tem suporte ao canvas!
+		</canvas>
+
+<script>
+	var tela = document.getElementsByTagName("canvas")[0];
+	var ctx = tela.getContext("2d");
+
+	var fps = 60;
+	var g = 60;
+	var dt = 1/fps;
+	var teclado = new Teclado();
+
+	var pc = new Sprite();
+	pc.controlar = function(){
+		if(this.direita){
+			this.ax = -150;
+		}else if(this.esquerda){
+			this.ax =  150;
+		}else{
+			this.ax = 0;
+		}
+		if(this.pulando){
+			this.vy = -2*g;
+			this.pulando = false;
+		}
+	};
+
+		
+	addEventListener("keydown", function(e){
+		if(e.keyCode==37){
+			pc.direita = true;
+		}
+		if(e.keyCode==39){
+			pc.esquerda = true;
+		}
+		if(e.keyCode==38){
+			pc.pulando = true;
+		}
+
+	});
+	addEventListener("keyup", function(e){
+		if(e.keyCode==37){
+			pc.direita = false;
+		}
+		if(e.keyCode==39){
+			pc.esquerda = false;
+		}
+		if(e.keyCode==38){
+			pc.pulando = false;
+		}
+		
+	});
+
+	setInterval(passo, 1000/fps);
+	function passo(){
+		ctx.fillStyle = "black";
+		ctx.fillRect(0,0, tela.width, tela.height);	
+		pc.controlar();
+		pc.moverCart(dt,200);
+		pc.desenhar(ctx);
+	}
+
+</script>
+</html>
