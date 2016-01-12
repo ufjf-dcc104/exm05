@@ -19,14 +19,23 @@
 		mapa[l] = [];
 		for (var c = 0; c < 20; c++){
 			mapa[l][c] = 0;
-			if(l==9) mapa[l][c] = 1;
+			if(l==9 || c == 0 || c == 19) mapa[l][c] = 1;
+			if(Math.random()<0.10){
+				mapa[l][c] = 1;
+			}
 		}
 	}
+
 	var fps = 60;
 	var g = 60;
 	var dt = 1/fps;
 
 	var pc = new Sprite();
+	var inimigo = new Sprite();
+	inimigo.x = 30*18;
+	var bonus = new Sprite();
+	bonus.x = 30*15;
+
 	pc.controlar = function(){
 		if(this.direita){
 			this.ax = -150;
@@ -41,6 +50,28 @@
 		}
 	};
 
+	inimigo.controlar = function () {
+		if(this.x>pc.x){
+			this.ax = -100;
+		}else if(this.x<pc.x){
+			this.ax = 100;
+		}
+		if(this.y>pc.y && this.vy == 0){
+			this.vy -= 2*g;
+		}
+			
+	}
+	bonus.controlar = function () {
+		if(this.x>pc.x){
+			this.ax = 100;
+		}else if(this.x<pc.x){
+			this.ax = -100;
+		}
+		if(this.y==pc.y && this.vy == 0){
+			this.vy -= 2*g;
+		}
+			
+	}
 		
 	addEventListener("keydown", function(e){
 		if(e.keyCode==37){
@@ -74,8 +105,29 @@
 		ctx.fillRect(0,0, tela.width, tela.height);	
 		desenharMapa();
 		pc.controlar();
+		inimigo.controlar();
+		bonus.controlar();
+		inimigo.moverCartGrid(dt,200, mapa);
 		pc.moverCartGrid(dt,200, mapa);
+		bonus.moverCartGrid(dt,200, mapa);
+
 		pc.desenhar(ctx);
+		inimigo.desenhar(ctx);
+		bonus.desenhar(ctx);
+
+		if(pc.colidiuCom(inimigo)){
+			pc.x = 30*1;
+			pc.y = 30*1;
+			pc.vy = 0;
+			pc.vx = 0;
+		}
+		if(pc.colidiuCom(bonus)){
+			bonus.x = 30*Math.random()*20+1;
+			bonus.y = 30*1;
+			bonus.vy = 0;
+			bonus.vx = 0;
+		}
+
 	}
 
 	function desenharMapa(){

@@ -39,7 +39,7 @@
 					this.vy = this.vy + this.ay*dt + g*dt;
 
 					this.gx = Math.floor(this.x/30);
-					this.gy = Math.floor(this.y/30);
+					this.gy = Math.floor((this.y+14)/30);
 
 					this.x = this.x + this.vx*dt;
 					if(grid[this.gy+1][this.gx]==1){
@@ -53,6 +53,10 @@
 					} else {
 						this.y = this.y + this.vy*dt;
 					}
+					if(this.x<0) this.x = 0;	
+					if(this.y<0) this.y = 0;
+					if(this.x+this.w/2>30*20) this.x = 30*20-this.w/2;	
+					if(this.y+this.h/2>30*20) this.y = 30*20-this.h/2;
 				};
 				this.desenhar = function(ctx){
 					ctx.save();
