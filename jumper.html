@@ -148,9 +148,9 @@
 	addEventListener("mousedown", clique);
 	function clique(e){
 		console.dir(e);
-		var gcx = Math.floor(e.layerX/30);
-		var gcy = Math.floor(e.layerY/30);
-		mapa[gcy][gcx] = mapa[gcy][gcx]?0:1;
+		var gcx = Math.floor(e.offsetX/30);
+		var gcy = Math.floor(e.offsetY/30);
+		mapa[gcy][gcx] = !mapa[gcy][gcx];
 	}
 </script>
 </html>
