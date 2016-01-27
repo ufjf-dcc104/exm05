@@ -2,6 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, user-scalable=0,minimum-scale=1.0, maximum-scale=1.0"/>
 		<title>Plataforma</title>
 		<script src="Sprite.js"></script>
 	</head>
@@ -15,6 +16,7 @@
 	var tela = document.getElementsByTagName("canvas")[0];
 	var ctx = tela.getContext("2d");
 	var mapa = [];
+	var movel = false;
 	mapa.img = new Image();
 	mapa.img.src = "platformer_32_mini.png";
 	for (var l = 0; l < 10; l++) {
@@ -28,6 +30,7 @@
 		}
 	}
 
+	configuraTela();
 	var fps = 60;
 	var g = 60;
 	var dt = 1/fps;
@@ -84,6 +87,7 @@
 	}
 		
 	addEventListener("keydown", function(e){
+		e.preventDefault();
 		if(e.keyCode==37){
 			pc.direita = true;
 		}
@@ -96,6 +100,7 @@
 
 	});
 	addEventListener("keyup", function(e){
+		e.preventDefault();
 		if(e.keyCode==37){
 			pc.direita = false;
 		}
@@ -138,6 +143,7 @@
 			bonus.vx = 0;
 		}
 
+		if(movel) desenhaBotoes(ctx);
 	}
 
 	function desenharMapa(){
@@ -154,7 +160,7 @@
 			}
 		}	
 	}
-	addEventListener("mousedown", clique);
+	//addEventListener("mousedown", clique);
 	function clique(e){
 		console.dir(e);
 		var gcx = Math.floor(e.offsetX/30);
@@ -222,5 +228,80 @@
 					//ctx.strokeRect(this.gx*30,this.gy*30, 30, 30);
 				};
 
+	function configuraTela () {
+
+		var altura = window.innerHeight;
+		
+		document.body.style.height = 2*altura+"px";
+		window.scrollTo(0,0);
+		movel = ('ontouchstart' in window);
+		if(!movel) return;
+
+		altura = window.innerHeight;
+		largura = window.innerWidth;
+		tela.style.position = 'absolute';
+		tela.style.top = 0;
+		tela.style.left = 0;
+		var fs = Math.min(altura/tela.height, largura/tela.width);
+		tela.style.width = fs*tela.width+"px";
+		tela.style.height = fs*tela.height+"px";
+	}
+	tela.addEventListener('touchstart', verificaTouch);
+	tela.addEventListener('touchmove', verificaTouch);
+	tela.addEventListener('touchend', verificaTouch);
+	function verificaTouch(e){
+
+		e.preventDefault();
+		pc.direita = false;
+		pc.esquerda = false;
+		pc.pulando = false;
+
+		var tamx = Math.floor(tela.width/8);
+		var tamy = Math.floor(tela.height/8);
+		for (var i = e.targetTouches.length - 1; i >= 0; i--) {
+			var toque = e.targetTouches[i];
+			var posx = Math.floor((toque.pageX)/tamx);
+			var posy = Math.floor((toque.pageY)/tamy);
+			console.log(posy+":"+posx);
+			ctx.fillStyle = 'white';
+			ctx.fillRect(posx*tamx,posy*tamy, tamx,tamy)
+			if((posx==6 || posx==7 )&& posy==6){ pc.pulando= true; }
+				if(posx==6 && posy==7){ pc.direita= true; }
+				if(posx==7 && posy==7){ pc.esquerda= true; }
+		};
+		if(e.type == 'touchstart'||e.type=='touchend'){
+			for (var i = e.targetTouches.length - 1; i >= 0; i--) {
+				var toque = e.targetTouches[i];
+				var posx = Math.floor((toque.pageX)/tamx);
+				var posy = Math.floor((toque.pageY)/tamy);
+				console.log(posy+":"+posx);
+				if((posx==6 || posx==7 )&& posy==6){ pc.pulando= (e.type=='touchstart'); }
+				if(posx==6 && posy==7){ pc.direita= (e.type=='touchstart'); }
+				if(posx==7 && posy==7){ pc.esquerda= (e.type=='touchstart'); }
+				ctx.fillStyle = 'white';
+				ctx.fillRect(posx*tamx,posy*tamy, tamx,tamy)
+
+
+			};
+	}
+
+	}
+
+	function desenhaBotoes (ctx) {
+		var tamx = Math.floor(tela.width/8);
+		var tamy = Math.floor(tela.height/8);
+		ctx.fillStyle = "green";
+		ctx.strokeStyle = "white";
+		ctx.save();
+		ctx.globalAlpha= 0.5;
+		ctx.fillRect(6*tamx, 6*tamy, tamx*2, tamy);
+		ctx.strokeRect(6*tamx, 6*tamy, tamx*2, tamy);
+
+		ctx.fillRect(6*tamx, 7*tamy, tamx, tamy);
+		ctx.fillRect(7*tamx, 7*tamy, tamx, tamy);
+		ctx.strokeRect(6*tamx, 7*tamy, tamx, tamy);
+		ctx.strokeRect(7*tamx, 7*tamy, tamx, tamy);
+		ctx.restore();
+	}
 </script>
 </html>
