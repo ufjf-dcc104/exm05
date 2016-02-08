@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, user-scalable=0,minimum-scale=1.0, maximum-scale=1.0"/>
 		<title>Plataforma</title>
 		<script src="Sprite.js"></script>
+		<script src="SoundLib.js"></script>
 	</head>
 	<body>
 		<h1>Plataforma</h1>
@@ -30,6 +31,12 @@
 		}
 	}
 
+	var soundlib = new SoundLib();
+	soundlib.load("pulo", "Cartoon Hop-SoundBible.com-553158131.mp3");
+	soundlib.load("boom", "Grenade Explosion-SoundBible.com-2100581469.mp3");
+	//pcJump.load();
+
+
 	configuraTela();
 	var fps = 60;
 	var g = 60;
@@ -40,6 +47,11 @@
 	pc.img = new Image()
 	pc.img.src="Old hero.png";
 
+	var boom = new Sprite();
+	boom.x = -100;
+	boom.img = new Image();
+	boom.img.src = "explosion17.png"
+
 	var inimigo = new Sprite();
 	inimigo.x = 30*18;
 	inimigo.img = new Image()
@@ -47,6 +59,10 @@
 	inimigo.f = 1;
 	inimigo.p = 1;
 	var bonus = new Sprite();
+	bonus.img = new Image()
+	bonus.img.src="Old enemies.png";
+	bonus.f = 1;
+	bonus.p = 7;
 	bonus.x = 30*15;
 
 	pc.controlar = function(){
@@ -60,6 +76,7 @@
 		if(this.pulando && this.vy == 0){
 			this.vy = -2*g;
 			this.pulando = false;
+			soundlib.play("pulo");
 		}
 	};
 
@@ -131,10 +148,16 @@
 		bonus.desenhar(ctx);
 
 		if(pc.colidiuCom(inimigo)){
-			pc.x = 30*1;
-			pc.y = 30*1;
 			pc.vy = 0;
 			pc.vx = 0;
+			soundlib.play("boom", 500);
+			boom.s = 0;
+			boom.x = pc.x;
+			boom.y = pc.y;
+			pc.x = 30*1;
+			pc.y = 30*1;
+			inimigo.x = 30*(Math.random()*5+14);
+			inimigo.y = 0;
 		}
 		if(pc.colidiuCom(bonus)){
 			bonus.x = 30*Math.random()*20+1;
@@ -144,6 +167,8 @@
 		}
 
 		if(movel) desenhaBotoes(ctx);
+
+		boom.desenhar(ctx);
 	}
 
 	function desenharMapa(){
@@ -209,24 +234,47 @@
 					//ctx.strokeRect(this.gx*30,this.gy*30, 30, 30);
 				};
 	inimigo.desenhar = function(ctx){
-					inimigo.s = inimigo.s||1;
+					this.s = this.s||1;
 					ctx.save();
 					ctx.translate(this.x, this.y);
 					ctx.rotate(this.angulo+Math.PI/2);
-					if(inimigo.vx > 0){
+					if(this.vx > 0){
 						ctx.scale(-2,2);
 					}else {
 						ctx.scale(2,2);
 					}
-					inimigo.f+=8*dt
-					if(inimigo.f>5) inimigo.f = 1;
-		ctx.drawImage(inimigo.img, Math.floor(inimigo.f)*16, inimigo.p*16, 16, 16,
+					this.f+=8*dt
+					if(this.f>5) this.f = 1;
+		ctx.drawImage(this.img, Math.floor(this.f)*16, this.p*16, 16, 16,
 								-8, -8, 16, 16	);
 
 					ctx.restore();
 					//ctx.strokeStyle = "white";
 					//ctx.strokeRect(this.gx*30,this.gy*30, 30, 30);
 				};
+	bonus.desenhar = inimigo.desenhar;
+	boom.desenhar = function(ctx){
+					boom.s = boom.s||0;
+					ctx.save();
+					ctx.translate(this.x, this.y);
+					ctx.rotate(this.angulo+Math.PI/2);
+					boom.s+=30*dt;
+					var l = Math.floor(boom.s) % 5;
+					var c = Math.floor(boom.s / 5 );
+					console.log(l,c,boom.s);
+					if(boom.s>25){
+						boom.s = 0;
+						boom.x = -100;
+						boom.y = -100;
+					}
+					ctx.drawImage(boom.img, l*64, c*64, 64, 64,
+								-32, -32, 64, 64	);
+
+					ctx.restore();
+					//ctx.strokeStyle = "white";
+					//ctx.strokeRect(this.gx*30,this.gy*30, 30, 30);
+	};
+
 
 	function configuraTela () {
 

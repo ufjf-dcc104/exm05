@@ -53,8 +53,8 @@
 					} else {
 						this.y = this.y + this.vy*dt;
 					}
-					if(this.x<0) this.x = 0;	
-					if(this.y<0) this.y = 0;
+					if(this.x<this.w/2) this.x = this.w/2;	
+					if(this.y<this.h/2) this.y = this.h/2;
 					if(this.x+this.w/2>30*20) this.x = 30*20-this.w/2;	
 					if(this.y+this.h/2>30*20) this.y = 30*20-this.h/2;
 				};
